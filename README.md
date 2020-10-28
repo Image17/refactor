@@ -13,10 +13,10 @@ Child considerations
 Another name will shadow access to the renamed element.	
 
 
-##Parents - We must consider all visible parent classes and interfaces when changing the value of a variable
+## Parents - We must consider all visible parent classes and interfaces when changing the value of a variable
 
 
-###Super class
+###  Super class
 
 ```java
 public class A {
@@ -34,7 +34,7 @@ class T extends A {
 }
 ```
 
-###Super abstract
+### Super abstract
 
 ```java
 public abstract class A {
@@ -51,7 +51,7 @@ class T extends A {
 	}
 }
 ```
-###Interface
+### Interface
 
 ```java
 public interface A {
@@ -73,7 +73,7 @@ class T implements A {
 
 We must also consider all variables visible in methods within the same class
 
-##Same class - elaborate or put first
+## Same class - elaborate or put first
 
 ```java
 public class A {
@@ -90,9 +90,9 @@ public class A {
 
 We must also consider each child class and class that implements the interface the change is in
 
-##Children
+## Children
 
-###Sub class
+### Sub class
 
 ```java
 public class A {
@@ -110,7 +110,7 @@ class T extends A {
 }
 ```
 
-###Implemented Interface
+### Implemented Interface
 
 ```java
 public interface A {
@@ -132,7 +132,7 @@ class T implements A {
 
 We must also compare against all interfaces inherited by a class
 
-###Multiple Implemented Interface in sub class
+### Multiple Implemented Interface in sub class
 
 ```java
 public interface A {
@@ -156,7 +156,7 @@ class T implements A, B {
 ```
 We must also consider all subclasses of a class that implements an interface
 
-###Interface subclass extensions
+### Interface subclass extensions
 
 ```java
 public interface A {
