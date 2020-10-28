@@ -1,6 +1,6 @@
 field must not be equal to
 
-if field is global and static within same class it CANNOT be used in methods in the same class, a sub class, implemented interface, extended abstract class.  This also needs to be implemented to each class that implements the interface
+if field is global and within same class it CANNOT be used in methods in the same class, a sub class, implemented interface, extended abstract class.  This also needs to be implemented to each class that implements the interface
 
 Parent considerations
 * Explore all super types global fields
@@ -18,17 +18,16 @@ Parents - We must consider all visible parent classes and interfaces when changi
 
 Super class
 
-```
-
+```java
 public class A {
-	public static int i = 1;
+	public int i = 1;
 
 }
 
 class T extends A {
-	public static int j = 2; // rename to i
+	public int j = 2; // rename to i
 	
-	public static void t() {	
+	public void t() {	
 		System.out.println(i);
 		System.out.println(j);
 	}
@@ -37,16 +36,16 @@ class T extends A {
 
 Super abstract
 
-```
+```java
 public abstract class A {
-	public static int i = 1;
+	public int i = 1;
 	
 }
 
 class T extends A {
-	public static int j = 2; // rename to i
+	public int j = 2; // rename to i
 	
-	public static void t() {	
+	public void t() {	
 		System.out.println(i);
 		System.out.println(j);
 	}
@@ -54,16 +53,16 @@ class T extends A {
 ```
 Interface
 
-```
+```java
 public interface A {
-	public static int i = 1; 
+	public int i = 1; 
 
 }
 
 class T implements A {
-	static int j = 2; // rename to i
+	int j = 2; // rename to i
 	
-	public static void t() {
+	public void t() {
 		System.out.println(i);
 		System.out.println(j);
 	}
@@ -78,9 +77,9 @@ Same class
 
 ```java
 public class A {
-	public static int i = 1; // rename to j
+	public int i = 1; // rename to j
 	
-	public static void main(String[] args) {
+	public void main(String[] args) {
 		int j = 1;
 		
 		System.out.println(i);
@@ -93,16 +92,16 @@ We must also consider each child class and class that implements the interface t
 
 Sub class
 
-```
+```java
 public class A {
-	public static int i = 1; // rename to j
+	public int i = 1; // rename to j
 
 }
 
 class T extends A {
-	static int j = 2;
+	int j = 2;
 	
-	public static void t() {	
+	public void t() {	
 		System.out.println(i);
 		System.out.println(j);
 	}
@@ -111,17 +110,16 @@ class T extends A {
 
 Interface
 
-```
-
+```java
 public interface A {
-	public static int i = 1; // rename to j
+	public int i = 1; // rename to j
 
 }
 
 class T implements A {
-	static int j = 2;
+	int j = 2;
 	
-	public static void t() {
+	public void t() {
 		System.out.println(i);
 		System.out.println(j);
 	}
@@ -134,20 +132,20 @@ We must also compare against all interfaces inherited by a class
 
 Interface implemented in sub class
 
-```
+```java
 public interface A {
-	public static int i = 1;
+	public int i = 1;
 	
 }
 
 interface B {
-	public static int k = 3; // rename to i
+	public int k = 3; // rename to i
 }
 
 class T implements A, B {
-	public static int j = 2;
+	public int j = 2;
 	
-	public static void t() {	
+	public void t() {	
 		System.out.println(i);
 		System.out.println(k);
 		System.out.println(j);
@@ -158,19 +156,19 @@ We must also consider all subclasses of a class that implements an interface
 
 Interface subclass extensions
 
-```
+```java
 public interface A {
-	public static int i = 1; // rename to j
+	public int i = 1; // rename to j
 }
 
 abstract class B implements A {
-	public static int k = 3;
+	public int k = 3;
 }
 
 class T extends B {
-	public static int j = 2;
+	public int j = 2;
 	
-	public static void t() {	
+	public void t() {	
 		System.out.println(i);
 		System.out.println(k);
 		System.out.println(j);
