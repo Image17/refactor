@@ -163,11 +163,11 @@ public interface A {
 	public int i = 1; // rename to k
 }
 
-abstract class B implements A {
+abstract class B  {
 	public int k = 3;
 }
 
-class T extends B {
+class T extends B implements A {
 	public int j = 2;
 	
 	public void t() {	
@@ -179,4 +179,4 @@ class T extends B {
 ```
 
 
-Methods
+### Methods
