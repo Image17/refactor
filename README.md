@@ -16,25 +16,86 @@ Another name will shadow access to the renamed element.
 ## Parents - We must consider all visible parent classes and interfaces when changing the value of a variable
 
 
-###  Super class
+###  Super class Preconditions
 
+#### Public field visible (Semantic)
+```java
+package demo;
+
+public class A {
+	public int i = 1;
+}
+
+class B extends A {
+	public int j = 2; // rename to i
+}
+
+class Test {
+	public static void main(String[] args) {
+		B b = new B();
+		System.out.println(b.i);
+	}
+}
+```
+#### Public field visibility reduction (Synatx)
 ```java
 public class A {
 	public int i = 1;
-
 }
 
-class T extends A {
-	public int j = 2; // rename to i
-	
-	public void t() {	
-		System.out.println(i);
-		System.out.println(j);
+class B extends A {
+	private int j = 2; // rename to i
+}
+
+class Test {
+	public static void main(String[] args) {
+		B b = new B();
+		System.out.println(b.i);
 	}
 }
 ```
 
-### Super abstract
+##### Package private field visible (Semantic)
+```java
+package demo;
+
+public class A {
+	int i = 1;
+}
+
+class B extends A {
+	public int j = 2; // rename to i
+}
+
+class Test {
+	public static void main(String[] args) {
+		B b = new B();
+		
+		System.out.println(b.i);
+	}
+}
+```
+
+#### Protected field visible (Semantic)
+```java
+public class A {
+	protected int i = 1;
+}
+
+class B extends A {
+	public int j = 2; // rename to i
+}
+
+class Test {
+	public static void main(String[] args) {
+		B b = new B();
+		System.out.println(b.i);
+	}
+}
+```
+
+
+### Super Class - Abstract
 
 ```java
 public abstract class A {
@@ -110,6 +171,8 @@ class T extends A {
 }
 ```
 
+include abstract
+
 ### Implemented Interface
 
 ```java
@@ -180,3 +243,7 @@ class T extends B implements A {
 
 
 ### Methods
+Due to method scope a variable defined in a method must only consider fields in its current class or super types and cannot be aware of children fields.  This means that if a field within a method were to be renamed it must not conflict with any visible fields of the current class or super classes/ interfaces
+
+```java
+```
