@@ -1,7 +1,7 @@
 # Precondition checks for rename field-variable refactorings
 
 ## Preconditions:
-There exist two precondition checks for the rename field-variable refactoring. The first is that the variable being renamed must exist. The second is that the renamed variable must not be a duplicate.
+There exist three precondition checks for the rename field-variable refactoring. The first is that the variable being renamed must exist. The second is that the renamed variable must not be a duplicate. Finally, the renamed field variable must not result in variable shadowing.
 
 The duplicate variable precondition check ensures that the
 renamed variable doesn’t already exist within the current scope
@@ -104,6 +104,17 @@ Parent and child classes both need to be considered when determining if a field 
 
 # Scenerios
 
+
+## Duplicate Variables Same Class
+Variable shadowing is a direct result of duplicate variables within a class hierarchy. Duplicate variables can also exist within the same class. Two field variables declared with the same name within the class results in a compile time error. Both scenerios must be considered.
+
+The following example results in a compile time error after renaming the field variable from i to j.
+```java
+class A {
+    int i = 2; // rename to j
+    int j = 2;
+}
+```
 
 ## Super Class Preconditions
 
@@ -359,25 +370,204 @@ class T extends B implements A {
 ```
 
 
-### Methods
-Due to method scope a variable defined in a method must only consider fields in its current class or super types and cannot be aware of children fields.  This means that if a field within a method were to be renamed it must not conflict with any visible fields of the current class or super classes/ interfaces
+## Block Scope Variables
+Variables defined in a block must be considered when renaming field variables in the current class, super class or interface.  
 
 
-We must also consider all variables visible in methods within the same class
 
-## Same class - elaborate or put first
+### Same class
+The following scenario outlines a field variable being shadowed within a methods scope after being renamed. 
 
 ```java
 public class A {
-	public int i = 1; // rename to j
+	public int i = 2; // rename to j
 	
 	public void t() {
 		int j = 1;
-		
-		System.out.println(i);
 		System.out.println(j);
+	}
+	
+	public static void main(String args[]) {
+	    A a = new A();
+	    a.t(); // Outputs 1
 	}
 }
 ```
+
+The same is true with other block scopes such as loops, conditionals or constructors. The below example demonstrates how the field variables would be shadowed within block scope after being renamed.
 ```java
+public class A {
+	int a = 2; // rename to i 
+	int b = 2; // rename to j
+	int c = 2; // rename to k
+	
+	A () {
+	    int k = 0;
+	    System.out.println(k); // Outputs 0
+	}
+	
+	void t() {
+		if (j == 2) { // True
+		    int j = 1;
+		    System.out.println(j); // Outputs 1
+		}
+		
+		for (int i = 0; i < 5; i++) {
+		    System.out.println(i); // Outputs 01234
+		}
+		
+		System.out.println(i); // Outputs 2
+		System.out.println(j); // Outputs 2
+		System.out.println(k); // Outputs 2
+	}
+	
+	public static void main(String args[]) {
+	    A a = new A();
+	    a.t();
+	}
+}
+```
+### Inheritance
+
+Local varaibles of child classes must be considered when renaming a parents field variable. 
+
+The following example demonstrates how renaming a parents field variable would cause the variable to be shadowed within the childs block scope.
+
+```java
+class A {
+    int i = 2; // rename to j
+}
+
+class B extends A {
+    B() {
+        int j = 0;
+        System.out.println(j);
+    }
+}
+
+public class Test {
+    public static void main(String args[]) {
+        B b = new B(); // Outputs 0
+    }
+}
+```
+
+The same is true when implementing interfaces
+
+```java
+interface A {
+    int j = 2; // rename to j
+}
+
+class B implements A {
+    B() {
+        int j = 0;
+        System.out.println(j);
+    }
+}
+
+public class Test {
+    public static void main(String args[]) {
+        B b = new B(); // Outputs 0
+    }
+}
+```
+
+The implemented interfaces of super classes must also be considered.
+
+```java
+interface A {
+    int a = 2; // rename to j
+}
+
+abstract class T implements A {
+    int t = 2; // rename to k
+}
+
+class B extends T {
+    B() {
+        System.out.println(j); // Outputs 2
+        System.out.println(k); // Outputs 2
+        int j = 0;
+        int k = 0;
+        System.out.println(j); // Outputs 0
+        System.out.println(k); // Outputs 0
+    }
+}
+
+public class Test {
+    public static void main(String args[]) {
+        B b = new B(); 
+    }
+}
+```
+
+Block scope of super classes shouldn't be considered when renaming child class field variables. These variables are not visible to the parent.
+
+```java
+class A {
+    A() {
+        int i = 2; // Field variable i within class B is not visible.
+        System.out.println(i);
+    }
+}
+
+class B extends A {
+    int j = 0; // rename to i
+}
+
+public class Test {
+    public static void main(String args[]) {
+        B b = new B(); // Outputs 2
+    }
+}
+```
+
+
+The same is true for abstract classes
+
+```java
+abstract class A {
+    void t() {
+        int i = 2; // Field variable i within class B is not visible.
+        System.out.println(i);
+    }
+}
+
+class B extends A {
+    int j = 0; // rename to i
+}
+
+public class Test {
+    public static void main(String args[]) {
+        B b = new B(); 
+        b.t(); // Outputs 2
+    }
+}
+```
+
+
+### Static Methods and Fields
+Static methods require an instance of the super class in order to access the parents field variables. In addition, the parents field variable must be declared as static. The same is true for variables within the same class.
+For this resason, variables within static methods won't be shadowed.
+
+```java
+class A {
+    static int i = 2;
+}
+
+class B extends A {
+    static void t() {
+        int j = 0; // rename to i
+        System.out.println(A.i); // Outputs 2
+        System.out.println(i); // Outputs 0
+    }
+}
+
+public class Test {
+    public static void main(String args[]) {
+        B b = new B(); 
+        b.t();
+    }
+}
 ```
