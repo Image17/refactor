@@ -55,9 +55,13 @@ public class Type {
 		return result;
 	}
 
+	
+
 	@Override
 	public String toString() {
-		return "Type [typeName=" + typeName + ", parentName=" + parentName + ", children=" + children + "]";
+		return "Type [typeName=" + typeName + ", parentName=" + parentName + ", root=" + root + ", children=" + children
+				+ ", fields=" + fields + ", implementedInterfaces=" + implementedInterfaces + ", localFields="
+				+ localFields + ", isInterface=" + isInterface + "]";
 	}
 
 	@Override

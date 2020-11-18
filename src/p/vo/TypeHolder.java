@@ -58,26 +58,9 @@ public class TypeHolder {
 	}
 
 	public static void display() {
-		determineChildren();
-
-		// find root objects who have parent of java.lang.Object
-		List<Type> roots = new ArrayList<>();
-		for (Type t : allTypes) {
-			System.out.println(t.localFields);
-			if (t.parentName.equalsIgnoreCase("Object")) {
-				roots.add(t);
-			}
+		for (Type type : allTypes) {
+			System.out.println(type);
 		}
-
-		for (Type r : roots) {
-			// create new collection of all types for the same relative root
-			List<Type> typesByRoot = allTypes.stream().filter(s -> s.root.equals(r.typeName))
-					.collect(Collectors.toList());
-			// add root to collection - not a great solution, honestly
-			typesByRoot.add(r);
-			System.out.println(); // blank line to separate distinct inhertiance hierarchies
-		}
-		clean();
 	}
 
 	

@@ -12,18 +12,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.DoStatement;
+import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SwitchStatement;
+import org.eclipse.jdt.core.dom.SynchronizedStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WhileStatement;
 
 import java.lang.reflect.Modifier;
 import p.vo.AccessModifiers;
 import p.vo.Field;
 import p.vo.LocalField;
+import p.vo.StatementHandler;
 import p.vo.TypeHolder;
 
 public class MyVisitor extends ASTVisitor {
@@ -58,7 +68,7 @@ public class MyVisitor extends ASTVisitor {
 			root = td.resolveBinding().getSuperclass().getName();
 			parent = td.resolveBinding().getSuperclass().getName();
 			isInterface = false;
-			System.out.println(td.resolveBinding().getInterfaces());
+			//System.out.println(td.resolveBinding().getInterfaces());
 			for (ITypeBinding itb : td.resolveBinding().getInterfaces()) {
 				System.out.println(itb);
 				implementedInterfaces.add(itb.getName());
@@ -100,26 +110,16 @@ public class MyVisitor extends ASTVisitor {
 		System.out.print(((TypeDeclaration)md.getParent()).getName().getIdentifier());
 		
 		if (md.getBody() != null) {
-			System.out.println(md);
-			for (Statement o : (List<Statement>) md.getBody().statements()) {
-				if (o instanceof VariableDeclarationStatement) {
-					for (VariableDeclarationFragment vfd: (List<VariableDeclarationFragment>) ((VariableDeclarationStatement) o).fragments()) {
-						TypeHolder.getInstance().typesByName.get(parent.resolveBinding().getName()).addLocalField(new LocalField(vfd.getName().getIdentifier()));
-					}			
-				}
-
-				
-				// explore IfStatement
-				// explore loops [for, while, do-while]
-				// explore block
-				// https://www.ibm.com/support/knowledgecenter/en/SSZHNR_2.0.0/org.eclipse.jdt.doc.isv/reference/api/org/eclipse/jdt/core/dom/class-use/Statement.html
+			List<Statement> statements = md.getBody().statements();
+			for (Statement statement : statements) {
+				StatementHandler.handleStatement(statement, parent);
 			}
 		}
-
-
+		
 		return true;
 	}
-
+	
+	
 	private AccessModifiers determineAccessModifier(int mods) {
 		AccessModifiers returnValue;
 		if (Modifier.isPrivate(mods)) {
