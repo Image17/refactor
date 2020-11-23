@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -20,6 +21,8 @@ import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
@@ -60,20 +63,26 @@ public class MyVisitor extends ASTVisitor {
 		String root = "";
 		String name = "";
 		String parent = "";
+		String packageName = null;
 		boolean isInterface = true;
-		List<String> implementedInterfaces = new ArrayList<>();
 		
+		List<String> implementedInterfaces = new ArrayList<>();
 		if (!td.isInterface()) {
 			name = td.resolveBinding().getName();
 			root = td.resolveBinding().getSuperclass().getName();
 			parent = td.resolveBinding().getSuperclass().getName();
 			isInterface = false;
-			//System.out.println(td.resolveBinding().getInterfaces());
 			for (ITypeBinding itb : td.resolveBinding().getInterfaces()) {
-				System.out.println(itb);
 				implementedInterfaces.add(itb.getName());
 				
 			}
+		} else {
+			name = td.resolveBinding().getName();			
+			List<SimpleType> interfaces = td.superInterfaceTypes();
+			for (SimpleType i : interfaces) {
+				implementedInterfaces.add(i.getName().getFullyQualifiedName());
+			}
+
 		}
 		
 		while (null != superclass) {
@@ -92,9 +101,14 @@ public class MyVisitor extends ASTVisitor {
 				fields.add(f);
 			}			
 		}
+		
+		CompilationUnit cu = (CompilationUnit) td.getParent();
+		if (null != cu.getPackage()) {
+			packageName = cu.getPackage().getName().getFullyQualifiedName();
+		}
 
 		TypeHolder th = TypeHolder.getInstance();
-		th.addType(name, parent, root, fields, implementedInterfaces, isInterface);
+		th.addType(name, parent, root, fields, implementedInterfaces, isInterface, packageName);
 
 		return true;
 	}
@@ -106,8 +120,15 @@ public class MyVisitor extends ASTVisitor {
 
 		List<LocalField> localFields = new ArrayList<>();
 		TypeDeclaration parent = (TypeDeclaration) md.getParent();
-		System.out.println("method declaration: " + md.getName().getIdentifier());
-		System.out.print(((TypeDeclaration)md.getParent()).getName().getIdentifier());
+
+		//md.parameters()
+		// 1 param SingleVariableDeclaration
+		List<SingleVariableDeclaration> parameters = md.parameters();
+		for (SingleVariableDeclaration parameter : parameters) {
+			TypeHolder.getInstance().typesByName.get(
+					parent.resolveBinding().getName())
+						.addLocalField(new LocalField(parameter.getName().getIdentifier()));
+		}
 		
 		if (md.getBody() != null) {
 			List<Statement> statements = md.getBody().statements();

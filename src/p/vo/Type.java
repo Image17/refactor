@@ -21,24 +21,22 @@ public class Type {
 	List<String> implementedInterfaces;
 	List<LocalField> localFields;
 	boolean isInterface;
+	String packageName;
 	
 	public Type(String name, String parentName, String root, List<Field> fields, List<String> implementedInterfaces,
-			boolean isInterface) {
+			boolean isInterface, String packageName) {
 		this.typeName = name;
 		this.parentName = parentName;
 		this.children = new ArrayList<>();
-		children.add("#");
 		this.root = root;
 		this.fields = fields;
 		this.implementedInterfaces = implementedInterfaces;
 		this.isInterface = isInterface;
 		localFields = new ArrayList<>();
+		this.packageName = packageName;
 	}
 
 	public void addChild(String child) {
-		if (children.contains("#")) {
-			children.clear();
-		}
 		children.add(child);
 	}
 	
@@ -55,13 +53,11 @@ public class Type {
 		return result;
 	}
 
-	
-
 	@Override
 	public String toString() {
 		return "Type [typeName=" + typeName + ", parentName=" + parentName + ", root=" + root + ", children=" + children
 				+ ", fields=" + fields + ", implementedInterfaces=" + implementedInterfaces + ", localFields="
-				+ localFields + ", isInterface=" + isInterface + "]";
+				+ localFields + ", isInterface=" + isInterface + ", packageName=" + packageName + "]";
 	}
 
 	@Override
