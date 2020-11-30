@@ -34,9 +34,10 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 
-import p.vo.TypeHolder;
+import helper.TypeHolder;
+
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 /**
  * Our sample action implements workbench action delegate. The action proxy will
@@ -127,9 +128,15 @@ public class RunAction implements IWorkbenchWindowActionDelegate {
 			cu.accept(MyVisitor.getInstance());
 		}
 
-		TypeHolder typeHolder = TypeHolder.getInstance();
+		//TypeHolder typeHolder = TypeHolder.getInstance();
 
-		typeHolder.display();
+		//typeHolder.display();
+		
+		Preconditions preconditions = new Preconditions("","","","");
+		if (preconditions.checkPreconditions()) {
+			//If the application meets the precondition checks then
+			//continue by performing the code changes.
+		} 
 	}
 
 	/**

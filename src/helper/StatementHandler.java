@@ -1,4 +1,4 @@
-package p.vo;
+package helper;
 
 import java.util.List;
 
@@ -17,6 +17,8 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+
+import p.vo.LocalField;
 
 public class StatementHandler {
 	

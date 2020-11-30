@@ -1,14 +1,20 @@
 package p.vo;
 
 public class Field {
-
-
 	String identifier;
 	AccessModifiers accessModifier;
 	
 	public Field(String id, AccessModifiers accessModifier) {
 		this.identifier = id;
 		this.accessModifier = accessModifier;
+	}
+	
+	public String getIdentifier() {
+		return this.identifier;
+	}
+	
+	public AccessModifiers getAccessModifier() {
+		return this.accessModifier;
 	}
 	
 	

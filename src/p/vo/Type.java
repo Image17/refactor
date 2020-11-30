@@ -13,15 +13,15 @@ import java.util.List;
 
 public class Type {
 
-	String typeName;
-	String parentName;
-	String root;
-	List<String> children;
-	List<Field> fields;
-	List<String> implementedInterfaces;
-	List<LocalField> localFields;
-	boolean isInterface;
-	String packageName;
+	public String typeName;
+	public String parentName;
+	public String root;
+	public List<String> children;
+	public List<Field> fields;
+	public List<String> implementedInterfaces;
+	public List<LocalField> localFields;
+	public boolean isInterface;
+	public String packageName;
 	
 	public Type(String name, String parentName, String root, List<Field> fields, List<String> implementedInterfaces,
 			boolean isInterface, String packageName) {
@@ -42,6 +42,10 @@ public class Type {
 	
 	public void addLocalField(LocalField localField) {
 		localFields.add(localField);
+	}
+	
+	public List<Field> getFields() { 
+		return this.fields; 
 	}
 
 	// auto-gen methods for HashSet use

@@ -32,12 +32,13 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import helper.StatementHandler;
+import helper.TypeHolder;
+
 import java.lang.reflect.Modifier;
 import p.vo.AccessModifiers;
 import p.vo.Field;
 import p.vo.LocalField;
-import p.vo.StatementHandler;
-import p.vo.TypeHolder;
 
 public class MyVisitor extends ASTVisitor {
 
