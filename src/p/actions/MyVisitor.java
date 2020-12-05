@@ -43,6 +43,7 @@ import p.vo.LocalField;
 public class MyVisitor extends ASTVisitor {
 
 	private static MyVisitor singleton = null;
+	String source;
 
 	private MyVisitor() {
 	}
@@ -51,6 +52,10 @@ public class MyVisitor extends ASTVisitor {
 		if (singleton == null)
 			singleton = new MyVisitor();
 		return singleton;
+	}
+	
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 	/**
@@ -118,7 +123,9 @@ public class MyVisitor extends ASTVisitor {
 	// need to check constructors
 	// need to check variables inside block scope
 	public boolean visit(MethodDeclaration md) {
-
+		
+		String s =source.substring(0 , md.getName().getStartPosition()) + "newname" + source.substring(md.getName().getStartPosition() + 1);
+		
 		List<LocalField> localFields = new ArrayList<>();
 		TypeDeclaration parent = (TypeDeclaration) md.getParent();
 

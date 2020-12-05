@@ -6,9 +6,10 @@ import java.util.List;
 
 import p.vo.AccessModifiers;
 import p.vo.Field;
+import p.vo.LocalField;
 import p.vo.Type;
 
-public class typeHelper {
+public class TypeHelper {
 	
 	public static List<Type> findParents(String typeName, String packageName) {
 		List<Type> parents = new ArrayList<>();
@@ -28,7 +29,7 @@ public class typeHelper {
 		return parents;
 	}
 	
-	public static void findChildren(String typeName, String packageName) {
+	public static List<Type> findChildren(String typeName, String packageName) {
 		List<Type> children = new ArrayList<>();
 		Type type = TypeHolder.typesByName.get(typeName);
 		ArrayDeque<String> dq = new ArrayDeque<>();
@@ -48,10 +49,10 @@ public class typeHelper {
 			
 		}
 		
-		System.out.println(children);
+		return children;
 	}
 	
-	public static void findParentInterfaces(String typeName, String packageName) {
+	public static List<Type> findParentInterfaces(String typeName, String packageName) {
 		List<Type> parentInterfaces = new ArrayList<>();
 		Type type = TypeHolder.typesByName.get(typeName);
 		
@@ -72,23 +73,33 @@ public class typeHelper {
 			
 		}
 		
-		System.out.println(parentInterfaces);
+		return parentInterfaces;
 	}
 	
-	public static void findChildrenInterfaces(String typeName, String packageName) {
+	public static List<Type> findChildrenInterfaces(String typeName, String packageName) {
 		List<Type> childrenInterfaces = new ArrayList<>();
-		Type type = TypeHolder.typesByName.get(typeName);
 		ArrayDeque<String> dq = new ArrayDeque<>();
 		
 		for (Type typeIterator : TypeHolder.allTypes) {
 			if (typeIterator.implementedInterfaces.contains(typeName)) {
 				dq.add(typeIterator.typeName);
+				childrenInterfaces.add(typeIterator);
 			}
 		}
 		
 		while (!dq.isEmpty()) {
-			String t = dq.pop();
+			
+			Type child = TypeHolder.typesByName.get(dq.pop());
+			
+			for (Type type : TypeHolder.allTypes) {
+				if (isChild(type, child.typeName)) {
+					dq.add(type.typeName);
+					childrenInterfaces.add(type);
+				}
+			}			
 		}
+		
+		return childrenInterfaces;
 	}
 	
 	public static boolean findVariable(String variableName, String packageName, String variableClass) {
@@ -104,10 +115,23 @@ public class typeHelper {
 		return false;
 	}
 	
+	public static boolean isShadowed(String variableName, String packageName, String variableClass) {
+		
+		//TODO handle interfaces
+		if (foundInParent(variableName,packageName,variableClass) || foundInChild(variableName,packageName,variableClass)) {
+			return true;
+		}
+		if (foundInParentInterface(variableName,packageName,variableClass) || foundInChildInterface(variableName,packageName,variableClass)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public static boolean foundInParent(String variableName, String packageName, String variableClass) {
 		for (Type parent : findParents(variableClass, packageName)) {
 			for (Field field : parent.getFields()) {
-				if (field.getIdentifier().equals(variableName) && isVisibleParent(field, packageName, parent) == false) {
+				if (field.getIdentifier().equals(variableName) && isVisible(field, packageName, parent) == true) {
 					// Variable found and is visible to child.
 					return true;
 				}
@@ -118,15 +142,69 @@ public class typeHelper {
 		return false;
 	}
 	
-	private static boolean isVisibleParent(Field field, String packageName, Type parent) {
+	public static boolean foundInChild(String variableName, String packageName, String variableClass) {
+		for (Type child : findChildren(variableClass, packageName)) {
+			for (Field field : child.getFields()) {
+				if (field.getIdentifier().equals(variableName) && isVisible(field, packageName, child) == true) {
+					// Variable found and is visible to child.
+					return true;
+				}
+			}
+			
+			for (LocalField field : child.getLocalFields()) {
+				if (field.getIdentifier().equals(variableName)) {
+					// Variable found and is visible to child.
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public static boolean foundInParentInterface(String variableName, String packageName, String variableClass) {
+		for (Type parent : findParentInterfaces(variableClass, packageName)) {
+			for (Field field : parent.getFields()) {
+				if (field.getIdentifier().equals(variableName) && isVisible(field, packageName, parent) == true) {
+					// Variable found and is visible to child.
+					return true;
+				}
+			}
+		}
+		
+		// Variable wasn't found in any local or instance field in parent classes.
+		return false;
+	}
+	
+	public static boolean foundInChildInterface(String variableName, String packageName, String variableClass) {
+		for (Type child : findChildrenInterfaces(variableClass, packageName)) {
+			for (Field field : child.getFields()) {
+				if (field.getIdentifier().equals(variableName) && isVisible(field, packageName, child) == true) {
+					// Variable found and is visible to child.
+					return true;
+				}
+			}
+			
+			for (LocalField field : child.getLocalFields()) {
+				if (field.getIdentifier().equals(variableName)) {
+					// Variable found and is visible to child.
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	private static boolean isVisible(Field field, String packageName, Type type) {
 		//Determine the child and parent package relationship.
 		//All variables can be accessed within same package unless AccessModifier is private.
 		//Public variables can only be accessed in different packages.
-		if (packageName.equals(parent.packageName) && field.getAccessModifier() != AccessModifiers.PRIVATE) {
+		if (packageName.equals(type.packageName) && field.getAccessModifier() != AccessModifiers.PRIVATE) {
 			return true;			
 		} 
 		
-		if (packageName.equals(parent.packageName) == false && 
+		if (packageName.equals(type.packageName) == false && 
 				(field.getAccessModifier() != AccessModifiers.PRIVATE && 
 					field.getAccessModifier() != AccessModifiers.NO_MODIFIER)) {
 			return true;			
@@ -135,8 +213,7 @@ public class typeHelper {
 		
 		return false;
 	}
-	
-	
+
 	private static boolean isChild(Type maybeChild, String typeName) {
 		return maybeChild.implementedInterfaces.contains(typeName) || maybeChild.parentName.equals(typeName);
 	}

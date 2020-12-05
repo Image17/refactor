@@ -8,13 +8,18 @@
 
 package p.actions;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -121,22 +126,66 @@ public class RunAction implements IWorkbenchWindowActionDelegate {
 		// JW: below is what you would be interested.
 		// Each compilation unit is now retrieved from a hashmap above and then accepts
 		// an ASTVisitor.
+
+		// JW: below is what you would be interested.
+		// Each compilation unit is now retrieved from a hashmap above and then accepts
+		// an ASTVisitor.
 		Iterator<ICompilationUnit> keySetIterator = parsedCompilationUnits.keySet().iterator();
 		while (keySetIterator.hasNext()) {
 			ICompilationUnit iCU = keySetIterator.next();
-			CompilationUnit cu = (CompilationUnit) parsedCompilationUnits.get(iCU);
-			cu.accept(MyVisitor.getInstance());
+			try {
+				IResource iResource = iCU.getUnderlyingResource();
+				IFile iFile = (IFile) iResource;
+				String fullPath = iFile.getRawLocation().toString();
+				ICompilationUnit workingCopy = iCU.getWorkingCopy(null);
+				ASTParser astParser = ASTParser.newParser(AST.JLS3);
+				astParser.setResolveBindings(true);
+				astParser.setSource(workingCopy);
+				CompilationUnit cu = (CompilationUnit) astParser.createAST(null);
+
+				
+				MyVisitor.getInstance().setSource(workingCopy.getSource());
+				cu.accept(MyVisitor.getInstance());
+				
+				
+
+				PrintStream output;
+				try {
+					output = new PrintStream(new File(fullPath));
+					// output.println(MyVisitor.getInstance().source);
+				} catch (FileNotFoundException e) { // TODO Auto-generated catch block e.printStackTr
+				}
+			} catch (JavaModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
-
-		//TypeHolder typeHolder = TypeHolder.getInstance();
-
-		//typeHolder.display();
 		
-		Preconditions preconditions = new Preconditions("","","","");
+		// check preconditions
+		
+		// if passed visit with code change visitor
+		// note start positions of all places to change
+		// go from start pos to start pos changing  and copying everything after
+		
+		
+		/*
+		 * Iterator<ICompilationUnit> keySetIterator =
+		 * parsedCompilationUnits.keySet().iterator(); while (keySetIterator.hasNext())
+		 * { ICompilationUnit iCU = keySetIterator.next(); CompilationUnit cu =
+		 * (CompilationUnit) parsedCompilationUnits.get(iCU);
+		 * cu.accept(MyVisitor.getInstance()); }
+		 */
+
+		// TypeHolder typeHolder = TypeHolder.getInstance();
+
+		// typeHolder.display();
+		TypeHolder.determineChildren();
+		Preconditions preconditions = new Preconditions("x", "y", "A", "test");
 		if (preconditions.checkPreconditions()) {
-			//If the application meets the precondition checks then
-			//continue by performing the code changes.
-		} 
+			// If the application meets the precondition checks then
+			// continue by performing the code changes.
+		}
 	}
 
 	/**

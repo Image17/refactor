@@ -67,7 +67,7 @@ public class TypeHolder {
 			System.out.println(type);
 		}
 		
-		typeHelper.findParentInterfaces("D", "test");
+		TypeHelper.findParentInterfaces("D", "test");
 		
 		
 		clean();
@@ -77,7 +77,7 @@ public class TypeHolder {
 	 * Assign children to all nodes, done after visiting to ensure order of classes
 	 * visited does not matter
 	 */
-	private static void determineChildren() {
+	public static void determineChildren() {
 
 		// assign children
 		for (Type t : allTypes) {

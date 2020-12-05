@@ -2,7 +2,7 @@ package p.actions;
 
 import p.vo.Type;
 import helper.TypeHolder;
-import helper.typeHelper;
+import helper.TypeHelper;
 import p.vo.Field;
 
 public class Preconditions {
@@ -25,8 +25,7 @@ public class Preconditions {
 		 *  2) Renaming variable must not result in a duplicate name.
 		 *  3) Renaming variable must not result in variable shadowing.
 		 * */
-		
-		if (variableExists() == true) {
+		if (variableExists() == false) {
 			System.out.println("Fail: Provided variable doesn't exist within the provided package and class.");
 			return false;
 		}
@@ -41,7 +40,7 @@ public class Preconditions {
 			return false;
 		}
 		
-		
+		System.out.println("Success: All preconditions passed!  Great job!");
 		// All precondition checks have been satisfied.
 		return true;
 	}
@@ -50,18 +49,18 @@ public class Preconditions {
 	
 	private static boolean variableExists() {
 		//Determine if the variable exists within the provided package and class.
-		return typeHelper.findVariable(prevName, variablePackage, variableClass);
+		return TypeHelper.findVariable(prevName, variablePackage, variableClass);
 	}
 	
 	private static boolean isDuplicateName() { 
 		//Determine if the new variable name already exists within the provided class.
-		return typeHelper.findVariable(newName, variablePackage, variableClass); 
+		return TypeHelper.findVariable(newName, variablePackage, variableClass); 
 	}
 		
 	
 	private static boolean isShadowed() {
 		//Determine if the new variable name already exists within
-		return true; 	
+		return TypeHelper.isShadowed(newName, variablePackage, variableClass); 	
 	}
 	
 	

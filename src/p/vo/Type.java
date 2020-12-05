@@ -44,6 +44,38 @@ public class Type {
 		localFields.add(localField);
 	}
 	
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public String getParentName() {
+		return parentName;
+	}
+
+	public String getRoot() {
+		return root;
+	}
+
+	public List<String> getChildren() {
+		return children;
+	}
+
+	public List<String> getImplementedInterfaces() {
+		return implementedInterfaces;
+	}
+
+	public List<LocalField> getLocalFields() {
+		return localFields;
+	}
+
+	public boolean isInterface() {
+		return isInterface;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
 	public List<Field> getFields() { 
 		return this.fields; 
 	}
