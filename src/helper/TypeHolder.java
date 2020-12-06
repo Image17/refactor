@@ -15,10 +15,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import p.vo.Field;
+import p.vo.FileAndVariableKey;
 import p.vo.Type;
 
 /**
@@ -30,10 +32,12 @@ public class TypeHolder {
 	private TypeHolder() {
 		this.allTypes = new HashSet<>();
 		this.typesByName = new HashMap<>();
+		this.fieldsByKey = new HashMap<>();
 	}
 
 	public static Set<Type> allTypes;
 	public static HashMap<String, Type> typesByName;
+	public static HashMap<String, Field> fieldsByKey;
 
 	private static TypeHolder singleton = null;
 
@@ -60,14 +64,38 @@ public class TypeHolder {
 		allTypes.add(type);
 		typesByName.put(typeName, type);
 	}
+	
+	public static void addField(String filePath, String key, Field field) {
+		fieldsByKey.put(key, field);
+	}
+	
+	public static void addFieldStartPosition(String filePath, String key, int startPosition) {
+		Field f = fieldsByKey.get(key);
+		
+		// in the case of LocalFields they will not be stored in fieldsByKey and will be null, they will be skipped
+		if (null != f) {
+			f.addStartPosition(filePath, startPosition);
+		}
+	}
+	
+	public Map<String, Set<Integer>> findVariableStartPositions(String typeName, String variableName, String packageName) {
+		Map<String, Set<Integer>> result = null;
+		for (Type type : allTypes) {
+			if (type.packageName.equals(packageName) && type.typeName.equals(typeName)) {
+				for (Field field : type.getFields()) {
+					if (field.getIdentifier().equals(variableName)) {
+						result =  fieldsByKey.get(field.getKey()).getStartPositionsByFilePath();
+					}
+				}
+			}
+		}
+		return result;
+	}
 
 	public static void display() {
-		determineChildren();
-		for (Type type : allTypes) {
-			System.out.println(type);
-		}
+		//determineChildren();
 		
-		TypeHelper.findParentInterfaces("D", "test");
+		System.out.println(fieldsByKey);
 		
 		
 		clean();

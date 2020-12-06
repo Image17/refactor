@@ -143,48 +143,44 @@ public class RunAction implements IWorkbenchWindowActionDelegate {
 				astParser.setSource(workingCopy);
 				CompilationUnit cu = (CompilationUnit) astParser.createAST(null);
 
-				
-				MyVisitor.getInstance().setSource(workingCopy.getSource());
+				// need to pass current file path to visitor to differentiate files
+				MyVisitor.getInstance().setSourceAndFilePath(fullPath, workingCopy.getSource());
 				cu.accept(MyVisitor.getInstance());
-				
-				
 
-				PrintStream output;
-				try {
-					output = new PrintStream(new File(fullPath));
-					// output.println(MyVisitor.getInstance().source);
-				} catch (FileNotFoundException e) { // TODO Auto-generated catch block e.printStackTr
-				}
+				
+//				PrintStream output;
+//				try {
+//					output = new PrintStream(new File(fullPath)); 
+//					//output.println(MyVisitor.getInstance().source);
+//				} catch (FileNotFoundException e) { // TODO Auto-generated catch block e.printStackTr
+//				}
+				 
 			} catch (JavaModelException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
-		
+
 		// check preconditions
-		
+
 		// if passed visit with code change visitor
 		// note start positions of all places to change
-		// go from start pos to start pos changing  and copying everything after
-		
-		
-		/*
-		 * Iterator<ICompilationUnit> keySetIterator =
-		 * parsedCompilationUnits.keySet().iterator(); while (keySetIterator.hasNext())
-		 * { ICompilationUnit iCU = keySetIterator.next(); CompilationUnit cu =
-		 * (CompilationUnit) parsedCompilationUnits.get(iCU);
-		 * cu.accept(MyVisitor.getInstance()); }
-		 */
-
-		// TypeHolder typeHolder = TypeHolder.getInstance();
+		// go from start pos to start pos changing and copying everything after
 
 		// typeHolder.display();
+		String currName = "i";
+		String newName = "j";
+		String className = "A";
+		String packageName = "test";
 		TypeHolder.determineChildren();
-		Preconditions preconditions = new Preconditions("x", "y", "A", "test");
+		Preconditions preconditions = new Preconditions(currName, newName, className, packageName);
 		if (preconditions.checkPreconditions()) {
 			// If the application meets the precondition checks then
 			// continue by performing the code changes.
+			TypeHolder.getInstance().findVariableStartPositions(className, currName, packageName);
+			
+			RenameAction.changeVariableName(currName, newName, TypeHolder.getInstance().findVariableStartPositions(className, currName, packageName), MyVisitor.getInstance().getSourceByFilePath());
+
 		}
 	}
 

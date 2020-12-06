@@ -1,0 +1,29 @@
+What we did - instance field refactor (tyler)
+
+
+code design (tyler)
+	visitor harvesting data
+	class to hold datastructure
+	helper classes with functions
+	visit - precondition - rename
+
+maybe visitor and statement handler?
+
+preconditions (ryan)
+existence
+	instance variable exists with name - type, modifier, etc don't matter
+duplicate
+	instance variable with same name already exists - type, modifier, etc don't matter
+shadow
+	shadows parent
+	shadows child
+	shadows local fields in class
+	matrix of parent child eligibility for interfaces and objects, how many parents/ children there could be
+
+code change method and demo (ryan)
+
+known bugs, area for improvement (ryan)
+
+difficulties encountered (tyler)
+
+lessons learned + conclusion (tyler)

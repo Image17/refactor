@@ -117,12 +117,25 @@ public class TypeHelper {
 	
 	public static boolean isShadowed(String variableName, String packageName, String variableClass) {
 		
-		//TODO handle interfaces
+		if (foundInType(variableName,packageName,variableClass)) {
+			return true;
+		}
 		if (foundInParent(variableName,packageName,variableClass) || foundInChild(variableName,packageName,variableClass)) {
 			return true;
 		}
 		if (foundInParentInterface(variableName,packageName,variableClass) || foundInChildInterface(variableName,packageName,variableClass)) {
 			return true;
+		}
+		
+		return false;
+	}
+	
+	public static boolean foundInType(String variableName, String packageName, String variableClass) {
+		Type type = TypeHolder.getInstance().typesByName.get(variableClass);
+		for (LocalField field : type.getLocalFields()) {
+			if (field.getIdentifier().equals(variableName)) {
+				return true;
+			}
 		}
 		
 		return false;
