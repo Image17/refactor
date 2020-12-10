@@ -384,12 +384,12 @@ public class A {
 	
 	public void t() {
 		int j = 1;
-		System.out.println(j);
+		System.out.println(i);
 	}
 	
 	public static void main(String args[]) {
 	    A a = new A();
-	    a.t(); // Outputs 1
+	    a.t(); // Outputs 2
 	}
 }
 ```
