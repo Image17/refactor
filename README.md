@@ -145,7 +145,7 @@ class A {
 }
 
 class B extends A {
-    public int i = 2; 
+    public int j = 2; // rename to i 
 }
 
 public class Test {
