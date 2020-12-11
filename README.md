@@ -272,7 +272,6 @@ class T implements A {
 	
 	public void t() {
 		System.out.println(i);
-		System.out.println(j);
 	}
 }
 ```
