@@ -140,19 +140,19 @@ class Test {
 ```
 #### Public field visibility reduction (Synatx)
 ```java
-public class A {
-	public int i = 1;
+class A {
+    public int i = 1;
 }
 
 class B extends A {
-	private int j = 2; // rename to i
+    public int i = 2; 
 }
 
-class Test {
-	public static void main(String[] args) {
-		B b = new B();
-		System.out.println(b.i); // Outputs 2
-	}
+public class Test {
+    public static void main(String []args){
+        B b = new B();
+        System.out.println(b.i);
+     }
 }
 ```
 
