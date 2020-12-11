@@ -380,11 +380,12 @@ The following scenario outlines a field variable being shadowed within a methods
 
 ```java
 public class A {
-	public int i = 2; 
+	public int i = 2; // rename to j
 	
 	public void t() {
-		int j = 1; // rename to i
-		System.out.println(i);
+		int j = 1; 
+		int k = i;
+		System.out.println(k);
 	}
 	
 	public static void main(String args[]) {
